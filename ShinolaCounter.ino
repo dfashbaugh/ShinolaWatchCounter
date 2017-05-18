@@ -133,6 +133,17 @@ int incrementOptoPosition(int curPosition)
 	return curPosition;
 }
 
+void PrintTheProblems()
+{
+	int posDiff = abs(curBottomPos - curTopPos);
+	if(posDiff > 2)
+	{
+		Serial.print("BOTTOM AND TOP MISALIGNED: ");
+		Serial.print("Bottom Pos: "); Serial.print(curBottomPos);
+		Serial.print(" Top Pos: "); Serial.println(curTopPos);
+	}
+}
+
 void SetOptoIndex()
 {
 	int curBottomOptoIndex = readBottomOptoIndex();
@@ -170,6 +181,7 @@ void CheckOptos()
 	{
 		curTopPos = incrementOptoPosition(curTopPos);
 		topTickStartTime = millis();
+		PrintTheProblems();
 	}
 	lastTopOptoValue = curTopOpto;
 
@@ -197,6 +209,7 @@ void CheckOptos()
 	{
 		curBottomPos = incrementOptoPosition(curBottomPos);
 		botTickStartTime = millis();
+		PrintTheProblems();
 	}
 	lastBottomOptoValue = curBottomOpto;
 
@@ -216,14 +229,6 @@ void CheckOptos()
 	Serial.print(" Destination Bottom Pos: ");
 	Serial.println(destinationTopBottom);
 */
-
-	int posDiff = abs(curBottomPos - curTopPos);
-	if(posDiff > 2)
-	{
-		Serial.print("BOTTOM AND TOP MISALIGNED: ");
-		Serial.print("Bottom Pos: "); Serial.print(curBottomPos);
-		Serial.print(" Top Pos: "); Serial.println(curTopPos);
-	}
 
 	SetOptoIndex();
 }
