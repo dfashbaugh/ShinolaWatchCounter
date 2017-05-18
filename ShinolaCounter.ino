@@ -35,6 +35,10 @@ int curTopSpeed = 0;
 int curBottomSpeed = 0;
 int curMiddleSpeed = 0;
 
+int topConsecutiveReads = 0;
+int midConsecutiveReads = 0;
+int botConsecutiveReads = 0;
+
 unsigned long debounceInterval = 1000;
 unsigned long botTickStartTime = 0;
 unsigned long midTickStartTime = 0;
@@ -156,9 +160,10 @@ void SetOptoIndex()
 
 void CheckOptos()
 {
-	if(millis() - topTickStartTime < debounceInterval)
+	int curTopOpto = 0;
+	if(millis() - topTickStartTime > debounceInterval)
 	{
-		int curTopOpto = readTopOpto();
+		curTopOpto = readTopOpto();
 	}
 	
 	if(lastTopOptoValue == 1 && curTopOpto == 0)
@@ -169,9 +174,10 @@ void CheckOptos()
 	lastTopOptoValue = curTopOpto;
 
 
-	if(millis() - midTickStartTime < debounceInterval)
+	int curMiddleOpto = 0;
+	if(millis() - midTickStartTime > debounceInterval)
 	{
-		int curMiddleOpto = readMiddleOpto();
+	 	curMiddleOpto = readMiddleOpto();
 	}
 	
 	if(lastMiddleOptoValue == 1 && curMiddleOpto == 0)
@@ -181,10 +187,10 @@ void CheckOptos()
 	}
 	lastMiddleOptoValue = curMiddleOpto;
 
-
-	if(millis() - botTickStartTime < debounceInterval)
+	int curBottomOpto = 0;
+	if(millis() - botTickStartTime > debounceInterval)
 	{
-		int curBottomOpto = readBottomOpto();
+		curBottomOpto = readBottomOpto();
 	}
 	
 	if(lastBottomOptoValue == 1 && curBottomOpto == 0)
@@ -216,7 +222,7 @@ void CheckOptos()
 	{
 		Serial.print("BOTTOM AND TOP MISALIGNED: ");
 		Serial.print("Bottom Pos: "); Serial.print(curBottomPos);
-		Serial.pritn(" Top Pos: "); Serial.println(curTopPos);
+		Serial.print(" Top Pos: "); Serial.println(curTopPos);
 	}
 
 	SetOptoIndex();
