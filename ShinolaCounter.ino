@@ -149,6 +149,74 @@ void SetOptoIndex()
 	lastMiddleIndexValue = curMiddleOptoIndex;
 }
 
+int topCounts = 0;
+int botCounts = 0;
+int midCounts = 0;
+int countThreshold = 5;
+void CheckOptos()
+{
+	int curTopOpto = readTopOpto();
+	if(curTopOpto == 0 && lastTopOptoValue == 0)
+	{
+		topCounts++;
+	}
+
+	if(curTopOpto == 1)
+	{
+		topCounts = 0;
+	}
+
+	lastTopOptoValue = curTopOpto;
+
+	if(topCounts == countThreshold)
+	{
+		curTopPos = incrementOptoPosition(curTopPos);
+	}
+
+
+
+	int curMiddleOpto = readMiddleOpto();
+	if(lastMiddleOptoValue == 0 && curMiddleOpto == 0)
+	{
+		midCounts++;
+	}
+
+	if(curMiddleOpto == 1)
+	{
+		midCounts = 0;
+	}
+
+	lastMiddleOptoValue = curMiddleOpto;
+
+	if(midCounts == countThreshold)
+	{
+		curMiddlePos = incrementOptoPosition(curMiddlePos);
+	}
+
+
+
+	int curBottomOpto = readBottomOpto();
+	if(lastBottomOptoValue == 0 && curBottomOpto == 0)
+	{
+		botCounts++;
+	}
+
+	if(curBottomOpto == 1)
+	{
+		botCounts = 0;
+	}
+
+	lastBottomOptoValue = curBottomOpto;
+
+	if(botCounts == countThreshold)
+	{
+		curBottomPos = incrementOptoPosition(curBottomPos);
+	}
+
+	SetOptoIndex();
+}
+
+/*
 void CheckOptos()
 {
 	int curTopOpto = readTopOpto();
@@ -186,6 +254,7 @@ void CheckOptos()
 
 	SetOptoIndex();
 }
+*/
 
 int CalculateDeceleratePosition(int destination)
 {
