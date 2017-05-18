@@ -35,6 +35,11 @@ int curTopSpeed = 0;
 int curBottomSpeed = 0;
 int curMiddleSpeed = 0;
 
+unsigned long debounceInterval = 1000;
+unsigned long botTickStartTime = 0;
+unsigned long midTickStartTime = 0;
+unsigned long topTickStartTime = 0;
+
 void setMotorSpeed(int pin, int speed)
 {
 	if(speed > MAX_SPEED)
@@ -151,38 +156,68 @@ void SetOptoIndex()
 
 void CheckOptos()
 {
-	int curTopOpto = readTopOpto();
+	if(millis() - topTickStartTime < debounceInterval)
+	{
+		int curTopOpto = readTopOpto();
+	}
+	
 	if(lastTopOptoValue == 1 && curTopOpto == 0)
 	{
 		curTopPos = incrementOptoPosition(curTopPos);
-		Serial.print("Cur Top Pos: ");
-		Serial.print(curTopPos);
-		Serial.print(" Destination Top Pos: ");
-		Serial.println(destinationTopBottom);
+		topTickStartTime = millis();
 	}
 	lastTopOptoValue = curTopOpto;
 
-	int curMiddleOpto = readMiddleOpto();
+
+	if(millis() - midTickStartTime < debounceInterval)
+	{
+		int curMiddleOpto = readMiddleOpto();
+	}
+	
 	if(lastMiddleOptoValue == 1 && curMiddleOpto == 0)
 	{
 		curMiddlePos = incrementOptoPosition(curMiddlePos);
-		Serial.print("Cur Middle Pos: ");
-		Serial.print(curMiddlePos);
-		Serial.print(" Destination Middle Pos: ");
-		Serial.println(destinationMiddle);
+		midTickStartTime = millis();
 	}
 	lastMiddleOptoValue = curMiddleOpto;
 
-	int curBottomOpto = readBottomOpto();
+
+	if(millis() - botTickStartTime < debounceInterval)
+	{
+		int curBottomOpto = readBottomOpto();
+	}
+	
 	if(lastBottomOptoValue == 1 && curBottomOpto == 0)
 	{
 		curBottomPos = incrementOptoPosition(curBottomPos);
-		Serial.print("Cur Bottom Pos: ");
-		Serial.print(curBottomPos);
-		Serial.print(" Destination Bottom Pos: ");
-		Serial.println(destinationTopBottom);
+		botTickStartTime = millis();
 	}
 	lastBottomOptoValue = curBottomOpto;
+
+/*
+	Serial.print("Cur Top Pos: ");
+	Serial.print(curTopPos);
+	Serial.print(" Destination Top Pos: ");
+	Serial.print(destinationTopBottom);
+
+	Serial.print(" Cur Middle Pos: ");
+	Serial.print(curMiddlePos);
+	Serial.print(" Destination Middle Pos: ");
+	Serial.print(destinationMiddle);
+
+	Serial.print(" Cur Bottom Pos: ");
+	Serial.print(curBottomPos);
+	Serial.print(" Destination Bottom Pos: ");
+	Serial.println(destinationTopBottom);
+*/
+
+	int posDiff = abs(curBottomPos - curTopPos);
+	if(posDiff > 2)
+	{
+		Serial.print("BOTTOM AND TOP MISALIGNED: ");
+		Serial.print("Bottom Pos: "); Serial.print(curBottomPos);
+		Serial.pritn(" Top Pos: "); Serial.println(curTopPos);
+	}
 
 	SetOptoIndex();
 }
