@@ -1,6 +1,14 @@
 #define MAX_SPEED 180
 #define MAX_OPTO_COUNT 12
 
+int max_top_speed = 180;
+int min_top_speed = 100;
+int top_speed = 150;
+
+int bottomSpeed = 160;
+
+int middleSpeed = 130;
+
 // PINS
 int BottomMotorPin = 5;
 int MiddleMotorPin = 4;
@@ -284,15 +292,27 @@ void StopOrDecelerate()
 	{
 		stopTopMotor();
 	}
+	else
+	{
+		setTopMotorSpeed(top_speed);
+	}
 
 	if(curBottomPos == destinationTopBottom)
 	{
 		stopBottomMotor();
 	}
+	else
+	{
+		setBottomMotorSpeed(bottomSpeed);
+	}
 
 	if(curMiddlePos == destinationMiddle)
 	{
 		stopMiddleMotor();
+	}
+	else
+	{
+		setMiddleMotorSpeed(middleSpeed);
 	}
 }
 
@@ -304,10 +324,17 @@ void MoveToNextGroup()
 		delay(5000);
 		destinationTopBottom = random(1, MAX_OPTO_COUNT);
 		destinationMiddle = destinationTopBottom;
-		setMiddleMotorSpeed(110);
-		setTopMotorSpeed(150);
-		setBottomMotorSpeed(180);
+		setMiddleMotorSpeed(middleSpeed);
+		setTopMotorSpeed(top_speed);
+		setBottomMotorSpeed(bottomSpeed);
 	}
+}
+
+void setTopSpeed()
+{
+	int analogVal = analogRead(A0);
+
+	top_speed = map(analogVal, 1024, 0, min_top_speed, max_top_speed);
 }
 
 void setupOptos()
@@ -385,4 +412,5 @@ void loop() {
   MoveToNextGroup();
   CheckOptos();
   StopOrDecelerate();
+  setTopSpeed();
 }
