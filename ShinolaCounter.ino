@@ -129,6 +129,10 @@ void SetOptoIndex()
 	int curBottomOptoIndex = readBottomOptoIndex();
 	if(curBottomOptoIndex == 0 && lastBottomIndexValue == 1)
 	{
+		if(curBottomPos != 0 & curBottomPos != 12)
+		{
+			Serial.print("Potential miscount on bottom. Hit index, but at "); Serial.println(curBottomPos);
+		}
 		curBottomPos = 0;
 	}
 	lastBottomIndexValue = curBottomOptoIndex;
@@ -136,6 +140,10 @@ void SetOptoIndex()
 	int curTopOptoIndex = readTopOptoIndex();
 	if(curTopOptoIndex == 0 && lastTopIndexValue == 1)
 	{
+		if(curTopPos != 0 & curTopPos != 12)
+		{
+			Serial.print("Potential miscount on top. Hit index, but at "); Serial.println(curTopPos);
+		}
 		curTopPos = 0;
 	}
 	lastTopIndexValue = curTopOptoIndex;
@@ -144,6 +152,10 @@ void SetOptoIndex()
 	int curMiddleOptoIndex = readMiddleOptoIndex();
 	if(curMiddleOptoIndex == 0 && lastMiddleIndexValue == 1)
 	{
+		if(curMiddlePos != 0 & curMiddlePos != 12)
+		{
+			Serial.print("Potential miscount on middle. Hit index, but at "); Serial.println(curMiddlePos);
+		}
 		curMiddlePos = 0;
 	}
 	lastMiddleIndexValue = curMiddleOptoIndex;
