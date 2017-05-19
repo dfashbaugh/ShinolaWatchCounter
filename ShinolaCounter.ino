@@ -172,7 +172,7 @@ void SetOptoIndex()
 int topCounts = 0;
 int botCounts = 0;
 int midCounts = 0;
-int countThreshold = 5;
+int countThreshold = 20;
 void CheckOptos()
 {
 	int curTopOpto = readTopOpto();
@@ -316,16 +316,26 @@ void StopOrDecelerate()
 	}
 }
 
-int ChooseNextPositionRelative(int maxDiff)
+void ChooseNextPositionRelative(int maxDiff)
 {
 	int newVal = random(1, maxDiff);
 
-	if(newVal > MAX_OPTO_COUNT)
+	destinationTopBottom += newVal;
+
+	if(destinationTopBottom > MAX_OPTO_COUNT)
 	{
-		newVal = newVal - MAX_OPTO_COUNT;
+		destinationTopBottom = destinationTopBottom - MAX_OPTO_COUNT;
 	} 
 
-	return newVal;
+	//destinationMiddle = destinationTopBottom;
+
+	newVal = random(1, maxDiff);
+	destinationMiddle += newVal;
+
+	if(destinationMiddle > MAX_OPTO_COUNT)
+	{
+		destinationMiddle = destinationMiddle - MAX_OPTO_COUNT;
+	}
 }
 
 void MoveToNextGroup()
@@ -334,8 +344,9 @@ void MoveToNextGroup()
 	{
 		StopOrDecelerate();
 		delay(5000);
-		destinationTopBottom = random(1, MAX_OPTO_COUNT);
-		destinationMiddle = destinationTopBottom;
+		ChooseNextPositionRelative(5);
+		//destinationTopBottom = random(1, MAX_OPTO_COUNT);
+		//destinationMiddle = destinationTopBottom;
 		setMiddleMotorSpeed(middleSpeed);
 		setTopMotorSpeed(top_speed);
 		setBottomMotorSpeed(bottomSpeed);
