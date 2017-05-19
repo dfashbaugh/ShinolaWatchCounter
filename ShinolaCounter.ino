@@ -316,6 +316,18 @@ void StopOrDecelerate()
 	}
 }
 
+int ChooseNextPositionRelative(int maxDiff)
+{
+	int newVal = random(1, maxDiff);
+
+	if(newVal > MAX_OPTO_COUNT)
+	{
+		newVal = newVal - MAX_OPTO_COUNT;
+	} 
+
+	return newVal;
+}
+
 void MoveToNextGroup()
 {
 	if(curTopPos == destinationTopBottom && curBottomPos == destinationTopBottom && curMiddlePos == destinationMiddle)
