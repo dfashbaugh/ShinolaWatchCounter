@@ -132,10 +132,23 @@ int incrementOptoPosition(int curPosition)
 	return curPosition;
 }
 
+int topIndexCounts = 0;
+int botIndexCounts = 0;
+int midIndexCounts = 0;
+int indexCountThreshold = 500;
 void SetOptoIndex()
 {
 	int curBottomOptoIndex = readBottomOptoIndex();
-	if(curBottomOptoIndex == 0 && lastBottomIndexValue == 1)
+	if(curBottomOptoIndex == 0)
+	{
+		botIndexCounts++;
+	}
+	else
+	{
+		botIndexCounts = 0;
+	}
+	
+	if(botIndexCounts == indexCountThreshold)
 	{
 		if(curBottomPos != 0 & curBottomPos != 12)
 		{
@@ -143,10 +156,18 @@ void SetOptoIndex()
 		}
 		curBottomPos = 0;
 	}
-	lastBottomIndexValue = curBottomOptoIndex;
 
 	int curTopOptoIndex = readTopOptoIndex();
-	if(curTopOptoIndex == 0 && lastTopIndexValue == 1)
+	if(curTopOptoIndex == 0)
+	{
+		topIndexCounts++;
+	}
+	else
+	{
+		topIndexCounts = 0;
+	}
+	
+	if(topIndexCounts == indexCountThreshold)
 	{
 		if(curTopPos != 0 & curTopPos != 12)
 		{
@@ -154,11 +175,19 @@ void SetOptoIndex()
 		}
 		curTopPos = 0;
 	}
-	lastTopIndexValue = curTopOptoIndex;
 
 
 	int curMiddleOptoIndex = readMiddleOptoIndex();
-	if(curMiddleOptoIndex == 0 && lastMiddleIndexValue == 1)
+	if(curMiddleOptoIndex == 0)
+	{
+		midIndexCounts++;
+	}
+	else
+	{
+		midIndexCounts = 0;
+	}
+
+	if(midIndexCounts == indexCountThreshold)
 	{
 		if(curMiddlePos != 0 & curMiddlePos != 12)
 		{
@@ -166,7 +195,7 @@ void SetOptoIndex()
 		}
 		curMiddlePos = 0;
 	}
-	lastMiddleIndexValue = curMiddleOptoIndex;
+
 }
 
 int topCounts = 0;
@@ -395,25 +424,60 @@ void Initialize()
 	int topDone = 0;
 	int middleDone = 0;
 
+	int bottomAcc = 0;
+	int middleAcc = 0;
+	int topAcc = 0;
+
+	int threshold = 500;
+
 	do
 	{
 		printOptoStates();
 		
 		if(readBottomOptoIndex() == 0 && readBottomOpto() == 0)
 		{
+			bottomAcc++;
+		}
+		else
+		{
+			bottomAcc = 0;
+		}
+
+		if(readMiddleOptoIndex() == 0 && readMiddleOpto() == 0)
+		{
+			middleAcc++;
+			
+		}
+		else
+		{
+			middleAcc = 0;
+		}
+
+		if(readTopOptoIndex() == 0 && readTopOpto() == 0)
+		{
+			topAcc++;
+		}
+		else 
+		{
+			topAcc = 0;
+		}
+
+		if(bottomAcc > threshold)
+		{
 			stopBottomMotor();
 			bottomDone = 1;
 		}
-		if(readMiddleOptoIndex() == 0 && readMiddleOpto() == 0)
+		if(middleAcc > threshold)
 		{
 			stopMiddleMotor();
 			middleDone = 1;
 		}
-		if(readTopOptoIndex() == 0 && readTopOpto() == 0)
+		if(topAcc > threshold)
 		{
 			stopTopMotor();
 			topDone = 1;
 		}
+
 	}while(bottomDone == 0 || middleDone == 0 || topDone == 0);
 	
 	curBottomPos = 0;
