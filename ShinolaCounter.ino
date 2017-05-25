@@ -1,6 +1,14 @@
 #define MAX_SPEED 180
 #define MAX_OPTO_COUNT 12
 
+int max_top_speed = 180;
+int min_top_speed = 100;
+int top_speed = 150;
+
+int bottomSpeed = 160;
+
+int middleSpeed = 130;
+
 // PINS
 int BottomMotorPin = 5;
 int MiddleMotorPin = 4;
@@ -10,7 +18,6 @@ int bottomOptoInterrupt = 12;
 int bottomOptoIndex = 11;
 
 int middleOptoInterrupt = 10;
-int middleOptoIndex = 9;
 
 int topOptoInterrupt = 8;
 int topOptoIndex = 7;
@@ -24,7 +31,6 @@ int curBottomPos = 0;
 int curMiddlePos = 0;
 
 int lastTopIndexValue = 0;
-int lastMiddleIndexValue = 0;
 int lastBottomIndexValue = 0;
 
 int lastTopOptoValue = 0;
@@ -82,7 +88,6 @@ void stopMiddleMotor()
 	setMiddleMotorSpeed(0);
 }
 
-
 int readBottomOpto()
 {
 	return digitalRead(bottomOptoInterrupt);
@@ -96,11 +101,6 @@ int readBottomOptoIndex()
 int readMiddleOpto()
 {
 	return digitalRead(middleOptoInterrupt);
-}
-
-int readMiddleOptoIndex()
-{
-	return digitalRead(middleOptoIndex);
 }
 
 int readTopOpto()
@@ -124,31 +124,119 @@ int incrementOptoPosition(int curPosition)
 	return curPosition;
 }
 
+int topIndexCounts = 0;
+int botIndexCounts = 0;
+int midIndexCounts = 0;
+int indexCountThreshold = 500;
 void SetOptoIndex()
 {
 	int curBottomOptoIndex = readBottomOptoIndex();
-	if(curBottomOptoIndex == 0 && lastBottomIndexValue == 1)
+	if(curBottomOptoIndex == 0)
 	{
+		botIndexCounts++;
+	}
+	else
+	{
+		botIndexCounts = 0;
+	}
+	
+	if(botIndexCounts == indexCountThreshold)
+	{
+		if(curBottomPos != 0 & curBottomPos != 12)
+		{
+			Serial.print("Potential miscount on bottom. Hit index, but at "); Serial.println(curBottomPos);
+		}
 		curBottomPos = 0;
 	}
-	lastBottomIndexValue = curBottomOptoIndex;
 
 	int curTopOptoIndex = readTopOptoIndex();
-	if(curTopOptoIndex == 0 && lastTopIndexValue == 1)
+	if(curTopOptoIndex == 0)
 	{
+		topIndexCounts++;
+	}
+	else
+	{
+		topIndexCounts = 0;
+	}
+	
+	if(topIndexCounts == indexCountThreshold)
+	{
+		if(curTopPos != 0 & curTopPos != 12)
+		{
+			Serial.print("Potential miscount on top. Hit index, but at "); Serial.println(curTopPos);
+		}
 		curTopPos = 0;
 	}
-	lastTopIndexValue = curTopOptoIndex;
-
-
-	int curMiddleOptoIndex = readMiddleOptoIndex();
-	if(curMiddleOptoIndex == 0 && lastMiddleIndexValue == 1)
-	{
-		curMiddlePos = 0;
-	}
-	lastMiddleIndexValue = curMiddleOptoIndex;
 }
 
+int topCounts = 0;
+int botCounts = 0;
+int midCounts = 0;
+int countThreshold = 20;
+void CheckOptos()
+{
+	int curTopOpto = readTopOpto();
+	if(curTopOpto == 0 && lastTopOptoValue == 0)
+	{
+		topCounts++;
+	}
+
+	if(curTopOpto == 1)
+	{
+		topCounts = 0;
+	}
+
+	lastTopOptoValue = curTopOpto;
+
+	if(topCounts == countThreshold)
+	{
+		curTopPos = incrementOptoPosition(curTopPos);
+	}
+
+
+
+	int curMiddleOpto = readMiddleOpto();
+	if(lastMiddleOptoValue == 0 && curMiddleOpto == 0)
+	{
+		midCounts++;
+	}
+
+	if(curMiddleOpto == 1)
+	{
+		midCounts = 0;
+	}
+
+	lastMiddleOptoValue = curMiddleOpto;
+
+	if(midCounts == countThreshold)
+	{
+		curMiddlePos = incrementOptoPosition(curMiddlePos);
+	}
+
+
+
+	int curBottomOpto = readBottomOpto();
+	if(lastBottomOptoValue == 0 && curBottomOpto == 0)
+	{
+		botCounts++;
+	}
+
+	if(curBottomOpto == 1)
+	{
+		botCounts = 0;
+	}
+
+	lastBottomOptoValue = curBottomOpto;
+
+	if(botCounts == countThreshold)
+	{
+		curBottomPos = incrementOptoPosition(curBottomPos);
+	}
+
+	SetOptoIndex();
+}
+
+/*
 void CheckOptos()
 {
 	int curTopOpto = readTopOpto();
@@ -186,6 +274,7 @@ void CheckOptos()
 
 	SetOptoIndex();
 }
+*/
 
 int CalculateDeceleratePosition(int destination)
 {
@@ -203,15 +292,44 @@ void StopOrDecelerate()
 	{
 		stopTopMotor();
 	}
+	else
+	{
+		setTopMotorSpeed(top_speed);
+	}
 
 	if(curBottomPos == destinationTopBottom)
 	{
 		stopBottomMotor();
 	}
+	else
+	{
+		setBottomMotorSpeed(bottomSpeed);
+	}
 
 	if(curMiddlePos == destinationMiddle)
 	{
 		stopMiddleMotor();
+	}
+	else
+	{
+		setMiddleMotorSpeed(middleSpeed);
+	}
+}
+
+void ChooseNextPositionRelative(int maxDiff)
+{
+	int newVal = random(1, maxDiff);
+
+	for(int i = 0; i < newVal; i++)
+	{
+		destinationTopBottom = incrementOptoPosition(destinationTopBottom);
+	}
+
+	newVal = random(1, maxDiff);
+
+	for(int i = 0; i < newVal; i++)
+	{
+		destinationMiddle = incrementOptoPosition(destinationMiddle);
 	}
 }
 
@@ -221,12 +339,20 @@ void MoveToNextGroup()
 	{
 		StopOrDecelerate();
 		delay(5000);
-		destinationTopBottom = random(1, MAX_OPTO_COUNT);
-		destinationMiddle = destinationTopBottom;
-		setMiddleMotorSpeed(110);
-		setTopMotorSpeed(150);
-		setBottomMotorSpeed(180);
+		ChooseNextPositionRelative(5);
+		//destinationTopBottom = random(1, MAX_OPTO_COUNT);
+		//destinationMiddle = destinationTopBottom;
+		setMiddleMotorSpeed(middleSpeed);
+		setTopMotorSpeed(top_speed);
+		setBottomMotorSpeed(bottomSpeed);
 	}
+}
+
+void setTopSpeed()
+{
+	int analogVal = analogRead(A0);
+
+	top_speed = map(analogVal, 1024, 0, min_top_speed, max_top_speed);
 }
 
 void setupOptos()
@@ -235,7 +361,6 @@ void setupOptos()
 	pinMode(bottomOptoIndex, INPUT_PULLUP);
 
 	pinMode(middleOptoInterrupt, INPUT_PULLUP);
-	pinMode(middleOptoIndex, INPUT_PULLUP);
 
 	pinMode(topOptoInterrupt, INPUT_PULLUP);
 	pinMode(topOptoIndex, INPUT_PULLUP);
@@ -249,7 +374,7 @@ void printOptoStates()
 		lastMillis = millis();
 		Serial.print("Bottom Index: "); Serial.print(readBottomOptoIndex()); Serial.print(" Bottom Opto: "); Serial.print(readBottomOpto());
 		Serial.print(" Top Index: "); Serial.print(readTopOptoIndex()); Serial.print(" Top Opto: "); Serial.print(readTopOpto());
-		Serial.print(" Middle Index: "); Serial.print(readMiddleOptoIndex()); Serial.print(" Middle Opto: "); Serial.println(readMiddleOpto());
+		Serial.print(" Middle Opto: "); Serial.println(readMiddleOpto());
 	}
 }
 
@@ -264,30 +389,50 @@ void Initialize()
 	int topDone = 0;
 	int middleDone = 0;
 
+	int bottomAcc = 0;
+	int middleAcc = 0;
+	int topAcc = 0;
+
+	int threshold = 500;
+
 	do
 	{
 		printOptoStates();
 		
 		if(readBottomOptoIndex() == 0 && readBottomOpto() == 0)
 		{
+			bottomAcc++;
+		}
+		else
+		{
+			bottomAcc = 0;
+		}
+
+		if(readTopOptoIndex() == 0 && readTopOpto() == 0)
+		{
+			topAcc++;
+		}
+		else 
+		{
+			topAcc = 0;
+		}
+
+		if(bottomAcc > threshold)
+		{
 			stopBottomMotor();
 			bottomDone = 1;
 		}
-		if(readMiddleOptoIndex() == 0 && readMiddleOpto() == 0)
-		{
-			stopMiddleMotor();
-			middleDone = 1;
-		}
-		if(readTopOptoIndex() == 0 && readTopOpto() == 0)
+		if(topAcc > threshold)
 		{
 			stopTopMotor();
 			topDone = 1;
 		}
+
 	}while(bottomDone == 0 || middleDone == 0 || topDone == 0);
 	
-	curBottomPos = 0;
-	curMiddlePos = 0;
-	curTopPos = 0;
+	curBottomPos = 1;
+	curMiddlePos = 1;
+	curTopPos = 1;
 
 }
 
@@ -304,4 +449,5 @@ void loop() {
   MoveToNextGroup();
   CheckOptos();
   StopOrDecelerate();
+  setTopSpeed();
 }
