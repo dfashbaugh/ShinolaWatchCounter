@@ -320,21 +320,16 @@ void ChooseNextPositionRelative(int maxDiff)
 {
 	int newVal = random(1, maxDiff);
 
-	destinationTopBottom += newVal;
-
-	if(destinationTopBottom > MAX_OPTO_COUNT)
+	for(int i = 0; i < newVal; i++)
 	{
-		destinationTopBottom = destinationTopBottom - MAX_OPTO_COUNT;
-	} 
-
-	//destinationMiddle = destinationTopBottom;
+		destinationTopBottom = incrementOptoPosition(destinationTopBottom);
+	}
 
 	newVal = random(1, maxDiff);
-	destinationMiddle += newVal;
 
-	if(destinationMiddle > MAX_OPTO_COUNT)
+	for(int i = 0; i < newVal; i++)
 	{
-		destinationMiddle = destinationMiddle - MAX_OPTO_COUNT;
+		destinationMiddle = incrementOptoPosition(destinationMiddle);
 	}
 }
 
