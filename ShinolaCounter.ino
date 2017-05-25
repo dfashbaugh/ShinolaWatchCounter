@@ -236,46 +236,6 @@ void CheckOptos()
 	SetOptoIndex();
 }
 
-/*
-void CheckOptos()
-{
-	int curTopOpto = readTopOpto();
-	if(lastTopOptoValue == 1 && curTopOpto == 0)
-	{
-		curTopPos = incrementOptoPosition(curTopPos);
-		Serial.print("Cur Top Pos: ");
-		Serial.print(curTopPos);
-		Serial.print(" Destination Top Pos: ");
-		Serial.println(destinationTopBottom);
-	}
-	lastTopOptoValue = curTopOpto;
-
-	int curMiddleOpto = readMiddleOpto();
-	if(lastMiddleOptoValue == 1 && curMiddleOpto == 0)
-	{
-		curMiddlePos = incrementOptoPosition(curMiddlePos);
-		Serial.print("Cur Middle Pos: ");
-		Serial.print(curMiddlePos);
-		Serial.print(" Destination Middle Pos: ");
-		Serial.println(destinationMiddle);
-	}
-	lastMiddleOptoValue = curMiddleOpto;
-
-	int curBottomOpto = readBottomOpto();
-	if(lastBottomOptoValue == 1 && curBottomOpto == 0)
-	{
-		curBottomPos = incrementOptoPosition(curBottomPos);
-		Serial.print("Cur Bottom Pos: ");
-		Serial.print(curBottomPos);
-		Serial.print(" Destination Bottom Pos: ");
-		Serial.println(destinationTopBottom);
-	}
-	lastBottomOptoValue = curBottomOpto;
-
-	SetOptoIndex();
-}
-*/
-
 int CalculateDeceleratePosition(int destination)
 {
 	int decelerate = destination - 1;
@@ -341,8 +301,6 @@ void MoveToNextGroup()
 		unsigned long delayTime = random(180000, 300000);
 		delay(delayTime);
 		ChooseNextPositionRelative(5);
-		//destinationTopBottom = random(1, MAX_OPTO_COUNT);
-		//destinationMiddle = destinationTopBottom;
 		setMiddleMotorSpeed(middleSpeed);
 		setTopMotorSpeed(top_speed);
 		setBottomMotorSpeed(bottomSpeed);
@@ -438,15 +396,12 @@ void Initialize()
 }
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.println("Start");
   setupOptos();
   Initialize();
 }
 
 void loop() {
-  //printOptoStates();
-  // put your main code here, to run repeatedly:
   MoveToNextGroup();
   CheckOptos();
   StopOrDecelerate();
