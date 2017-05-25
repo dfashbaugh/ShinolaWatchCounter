@@ -338,7 +338,8 @@ void MoveToNextGroup()
 	if(curTopPos == destinationTopBottom && curBottomPos == destinationTopBottom && curMiddlePos == destinationMiddle)
 	{
 		StopOrDecelerate();
-		delay(5000);
+		unsigned long delayTime = random(180000, 300000);
+		delay(delayTime);
 		ChooseNextPositionRelative(5);
 		//destinationTopBottom = random(1, MAX_OPTO_COUNT);
 		//destinationMiddle = destinationTopBottom;
