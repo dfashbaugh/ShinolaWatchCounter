@@ -430,7 +430,7 @@ void loop() {
     Serial.print(destinationMiddle);
     Serial.print("\t");
     Serial.print("TopPos");
-    Serial.println(curTopPos);
+    Serial.print(curTopPos);
     Serial.print(":");
     Serial.println(destinationTopBottom);
     prevTime = curTime;
