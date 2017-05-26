@@ -340,13 +340,13 @@ void printOptoStates()
 void Initialize()
 {
 	Serial.println("Run Motors");
-	setMiddleMotorSpeed(255);
+	setMiddleMotorSpeed(0);
 	setTopMotorSpeed(255);
 	setBottomMotorSpeed(255);
 
 	int bottomDone = 0;
 	int topDone = 0;
-	int middleDone = 0;
+	int middleDone = 1;
 
 	int bottomAcc = 0;
 	int middleAcc = 0;
