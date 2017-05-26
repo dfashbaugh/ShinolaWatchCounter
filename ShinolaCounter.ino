@@ -150,7 +150,7 @@ void SetOptoIndex()
   
   if(botIndexCounts == indexCountThreshold)
   {
-    if(curBottomPos != 1 & curBottomPos != 12)
+    if(curBottomPos != 1 && curBottomPos != 12)
     {
       Serial.print("Potential miscount on bottom. Hit index, but at "); Serial.println(curBottomPos);
     }
@@ -169,7 +169,7 @@ void SetOptoIndex()
   
   if(topIndexCounts == indexCountThreshold)
   {
-    if(curTopPos != 1 & curTopPos != 12)
+    if(curTopPos != 1 && curTopPos != 12)
     {
       Serial.print("Potential miscount on top. Hit index, but at "); Serial.println(curTopPos);
     }
