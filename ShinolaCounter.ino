@@ -421,12 +421,18 @@ void loop() {
   if(curTime - prevTime > 100){
     Serial.print("BotPos");
     Serial.print(curBottomPos);
+    Serial.print(":");
+    Serial.print(destinationTopBottom);
     Serial.print("\t");
     Serial.print("MidPos");
     Serial.print(curMiddlePos);
+    Serial.print(":");
+    Serial.print(destinationMiddle);
     Serial.print("\t");
     Serial.print("TopPos");
     Serial.println(curTopPos);
+    Serial.print(":");
+    Serial.println(destinationTopBottom);
     prevTime = curTime;
   }
 
